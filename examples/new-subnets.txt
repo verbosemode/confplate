@@ -1,0 +1,9 @@
+vlan {{VLAN_ID}}
+ name {{VLAN_NAME}}
+!
+interface Vlan{{VLAN_ID}}
+ ip address {{IP}} {{NM}}
+ ip ospf 1 area 0.0.0.0
+ ip ospf passive-interface
+ ip helper-address {{IP_HELPER}}
+

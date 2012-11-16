@@ -1,0 +1,14 @@
+hostname {{HOSTNAME|lower}}
+!
+ip domain name {{DOMAINNAME}}
+!
+interface range FastEthernet0/1 - 24
+ swtichport mode access
+ switchport access vlan {{ACCESS_VLAN}}
+ switchport nonegotiate
+ no shut
+!
+interface {{MGMT_IFACE}}
+ ip address {{MGMT_IFACE_IP}} {{MGMT_IFACE_NM}}
+!
+ip default-gateway {{MGMT_DEFAULT_GW}}
