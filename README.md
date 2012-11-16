@@ -57,7 +57,7 @@ Get a list of variables used in a template
 Interactive mode
 ----------------
 
-* Will prompt you for every variable used in the template
+Will prompt you for every variable used in the template
 
 
 	$ ./confplate.py examples/cat3560.txt
@@ -73,7 +73,7 @@ Interactive mode
 Variables as arguments
 ----------------------
 
-* Set all variable values as arguments on the command line
+Set all variable values as arguments on the command line
 
 
 	./confplate.py examples/cat3560.txt ACCESS_VLAN=23 DOMAINNAME=lab.verbosemo.de HOSTNAME=brewery-sw010 MGMT_IFACE=Vlan200 MGMT_IFACE_IP=10.33.200.10 MGMT_IFACE_NM=255.255.255.0 MGMT_DEFAULT_GW=10.33.200.1
