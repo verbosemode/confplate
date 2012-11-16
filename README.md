@@ -1,4 +1,4 @@
-ConfPlate is a configuration file generator. After doing some configurations over and over again I got bored and built this script. Boring tasks often lead to mistakes in configurations which you want to avaoid I assume.
+ConfPlate is a configuration file generator. After doing some configurations over and over again I got bored and built this script. Boring tasks often lead to mistakes in configurations which you want to avoid I assume.
 
 The script is based on Python and uses Jinja2 as template language. Due to the lack of error handling and not enough
 testing some features supported by Jinja2 might not work (template inheritence, for loops, ...) yet.
@@ -59,6 +59,7 @@ Interactive mode
 
 * Will prompt you for every variable used in the template
 
+
 	$ ./confplate.py examples/cat3560.txt
 	ACCESS_VLAN: 23
 	DOMAINNAME: lab.verbosemo.de
@@ -74,7 +75,8 @@ Variables as arguments
 
 * Set all variable values as arguments on the command line
 
-	$ ./confplate.py examples/cat3560.txt ACCESS_VLAN=23 DOMAINNAME=lab.verbosemo.de HOSTNAME=brewery-sw010 MGMT_IFACE=Vlan200 MGMT_IFACE_IP=10.33.200.10 MGMT_IFACE_NM=255.255.255.0 MGMT_DEFAULT_GW=10.33.200.1
+
+	./confplate.py examples/cat3560.txt ACCESS_VLAN=23 DOMAINNAME=lab.verbosemo.de HOSTNAME=brewery-sw010 MGMT_IFACE=Vlan200 MGMT_IFACE_IP=10.33.200.10 MGMT_IFACE_NM=255.255.255.0 MGMT_DEFAULT_GW=10.33.200.1
 
 
 Bulk configuration
