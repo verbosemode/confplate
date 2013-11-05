@@ -5,7 +5,7 @@
 # License:
 #
 # The MIT License (MIT)
-# 
+#
 # Copyright (c) 2013 Jochen Bartl <jochenbartl@mail.de>
 # 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -36,6 +36,7 @@ import csv
 from jinja2 import Environment, FileSystemLoader, StrictUndefined, meta
 
 VERSION = '0.1'
+
 
 class ConfPlate(object):
     def __init__(self):
@@ -198,13 +199,13 @@ def show_usage_examples():
 if __name__ == '__main__':
     optparser = OptionParser(usage="usage: %prog [options] template-file [template variables ...]")
     optparser.add_option('', '--help-examples', dest='examples', action='store_true',
-                            help='Show usage examples', default=False)
+                         help='Show usage examples', default=False)
     optparser.add_option('-l', '--list-variables', dest='listvariables', action='store_true',
-                            help='List template variables', default=False)
+                         help='List template variables', default=False)
     optparser.add_option('-f', '--force', dest='force', action='store_true',
-                            help='Replace unset variables with UNSET and continue', default=False)
+                         help='Replace unset variables with UNSET and continue', default=False)
     optparser.add_option('-i', '--input-csv', dest='inputcsv',
-                            help='Read variables from a CSV file')
+                         help='Read variables from a CSV file')
     #optparser.add_option('-D', '--debug', dest='debug', action='store_true',
     #                        help='Enable debug mode', default=False)
 
@@ -214,7 +215,7 @@ if __name__ == '__main__':
     #    logger.setLevel(logging.DEBUG)
 
     #--------------------------------------------------------------------------
-    # Show usage examples 
+    # Show usage examples
     #--------------------------------------------------------------------------
     if options.examples:
         show_usage_examples()
