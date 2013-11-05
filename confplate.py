@@ -35,19 +35,7 @@ import csv
 
 from jinja2 import Environment, FileSystemLoader, StrictUndefined, meta
 
-# FIXME Clean-up + hints on how to get PyGTK installed
-# Only show warning if GUI is started intentionally
-try:
-    import pygtk
-    pygtk.require("2.0")
-    import gtk
-except:
-    #print 'PyGTK not installed'
-    pass
-
-
 VERSION = '0.1'
-
 
 class ConfPlate(object):
     def __init__(self):
@@ -55,7 +43,6 @@ class ConfPlate(object):
         self.templatename = ""
         self.variables = {}
 
-        # Logging
         self.logger = logging.getLogger('ConfPlate')
         self.logger.setLevel(logging.DEBUG)
         ch = logging.StreamHandler()
@@ -138,7 +125,6 @@ class ConfPlate(object):
 
 class Cli(object):
     def __init__(self):
-        # Logging
         self.logger = logging.getLogger('Cli')
         self.logger.setLevel(logging.DEBUG)
         ch = logging.StreamHandler()
@@ -190,7 +176,6 @@ class Cli(object):
 
         sys.stderr.write("\nPlease specify them or use the -f/--force option to replace unset variables with the string UNSET\n\n")
 
-
     def interactive_mode(self, tpl):
         tplvars = tpl.get_template_vars()
         d = {}
@@ -207,106 +192,13 @@ class Cli(object):
         return d
 
 
-class Gui(object):
-    def delete_event(self, widget, event, data=None):
-        gtk.main_quit()
-
-        return False
-
-    def __init__(self):
-        self.window = self.add_window()
-
-        self.vbox = self.add_vbox(self.window)
-
-        #self.button = self.add_button(self.vbox)
-        #self.checkbutton = self.add_checkbutton(self.vbox)
-
-        #self.vbox.pack_start(self.button, expand=False)
-        #self.window.show_all()
-
-        # Logging
-        self.logger = logging.getLogger('TplGui')
-        self.logger.setLevel(logging.DEBUG)
-        ch = logging.StreamHandler()
-        formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-        ch.setFormatter(formatter)
-        self.logger.addHandler(ch)
-
-    def set_variable_names(self, variables):
-
-        for k in variables:
-            hbox = gtk.HBox(False, 8)
-
-            label = self.add_label(hbox)
-            label.set_text(k)
-
-            entry = self.add_entry(hbox)
-            #entry.set_text(self.d[k])
-            #entry.set_text('')
-            self.vbox.add(hbox)
-
-    def show(self):
-        self.window.show_all()
-
-    def add_window(self):
-        window = gtk.Window(gtk.WINDOW_TOPLEVEL)
-        #window.set_size_request(400, 400)
-        window.connect("delete_event", self.delete_event)
-        #window.set_border_width(8)
-
-        return window
-
-    def add_vbox(self, widget):
-        vbox = gtk.VBox(False, 8)
-        widget.add(vbox)
-
-        return vbox
-
-    def add_hbox(self, widget):
-        hbox = gtk.HBox(False, 8)
-        widget.add(hbox)
-
-        return hbox
-
-    def add_label(self, widget):
-        label = gtk.Label()
-        widget.add(label)
-
-        return label
-
-    def add_entry(self, widget):
-        entry = gtk.Entry()
-        widget.add(entry)
-
-        return entry
-
-    #def add_button(self, widget):
-    #    button = gtk.Button(label="Colorize!")
-    #    button.set_size_request(100, 100)
-    #    button.connect("clicked", self.button_clicked_event)
-    #    widget.pack_start(button, expand=False)
-
-    #    return button
-
-
 def show_usage_examples():
     print """Sorry, not yet"""
 
-
-
-
 if __name__ == '__main__':
     optparser = OptionParser(usage="usage: %prog [options] template-file [template variables ...]")
-    #optparser.add_option("-C", "--community", dest="community",
-    #                        help="SNMP community", default="public")
-    #optparser.add_option("-S", "--snmpversion", dest="snmpversion",
-    #                        help="SNMP version (1, 2c)", default="2c")
-    #optparser.add_option("-P", "--statspath", dest="statspath",
-    #                        help="Path were statistic files are stored")
     optparser.add_option('', '--help-examples', dest='examples', action='store_true',
                             help='Show usage examples', default=False)
-    optparser.add_option('-g', '--gui', dest='gui', action='store_true',
-                            help='Start the GUI', default=False)
     optparser.add_option('-l', '--list-variables', dest='listvariables', action='store_true',
                             help='List template variables', default=False)
     optparser.add_option('-f', '--force', dest='force', action='store_true',
@@ -349,27 +241,6 @@ if __name__ == '__main__':
 
         cli = Cli()
         cli.list_template_vars(tpl)
-
-        sys.exit(0)
-
-    #--------------------------------------------------------------------------
-    # GUI
-    #--------------------------------------------------------------------------
-    if options.gui:
-        # FIXME Tpl filename / path should be optional
-        tpl = ConfPlate()
-        tpl.templatepath = os.path.dirname(args[0])
-        tpl.templatename = os.path.basename(args[0])
-
-        tplvars = tpl.get_template_vars()
-
-        # Any variables set on command line?
-        # Time to read variables from CSV?
-
-        tplgui = Gui()
-        tplgui.set_variable_names(tplvars)
-        tplgui.show()
-        gtk.main()
 
         sys.exit(0)
 
@@ -450,5 +321,3 @@ if __name__ == '__main__':
         print tpl.render_template()
 
         sys.exit(0)
-
-
