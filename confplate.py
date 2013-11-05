@@ -157,24 +157,24 @@ class Cli(object):
         tplvars = tpl.get_template_vars()
         tplvars = tpl.parse_var_types(tplvars)
 
-        print "\nVariables used in template %s\n" % (tpl.templatename)
+        print("\nVariables used in template %s\n" % (tpl.templatename))
 
         for v in tplvars:
             # TODO No support for data types yet
-            #print "\t* %s\t\t(%s)" % (v, tplvars[v])
-            print "\t%s" % v
+            #print("\t* %s\t\t(%s)" % (v, tplvars[v]))
+            print("\t%s" % v)
 
-        print '\n'
+        print('\n')
 
     def list_unset_vars(self, variables):
-        sys.stderr.write("\nThe following variables are not set\n\n")
+        sys.stderr.write('\nThe following variables are not set\n\n')
 
         for v in variables:
             # TODO No support for data types yet
-            #print "\t* %s\t\t(%s)" % (v, tplvars[v])
+            #print("\t* %s\t\t(%s)" % (v, tplvars[v]))
             sys.stderr.write("\t%s\n" % v)
 
-        sys.stderr.write("\nPlease specify them or use the -f/--force option to replace unset variables with the string UNSET\n\n")
+        sys.stderr.write('\nPlease specify them or use the -f/--force option to replace unset variables with the string UNSET\n\n')
 
     def interactive_mode(self, tpl):
         tplvars = tpl.get_template_vars()
@@ -184,7 +184,7 @@ class Cli(object):
             try:
                 s = raw_input("%s: " % v)
             except KeyboardInterrupt:
-                print 'Quitting interactive mode: You have pressed Ctrl + c'
+                print('Quitting interactive mode: You have pressed Ctrl + c')
                 sys.exit(1)
 
             d[v] = s
@@ -193,7 +193,7 @@ class Cli(object):
 
 
 def show_usage_examples():
-    print """Sorry, not yet"""
+    print('Sorry, not yet')
 
 if __name__ == '__main__':
     optparser = OptionParser(usage="usage: %prog [options] template-file [template variables ...]")
@@ -268,14 +268,14 @@ if __name__ == '__main__':
         for e in tplvarlist:
             if options.force:
                 tpl.set_variables(e, unset='UNSET')
-                print tpl.render_template()
+                print(tpl.render_template())
             else:
                 unsetvars = tpl.set_variables(e)
 
-                print tpl.render_template()
+                print(tpl.render_template())
 
             if len(unsetvars) > 0:
-                print "CSV row %i" % i
+                print("CSV row %i" % i)
                 cli.list_unset_vars(unsetvars)
                 sys.exit(-1)
 
@@ -286,13 +286,13 @@ if __name__ == '__main__':
         tplvars, failed = cli.cli_vars_to_dict(args[1:])
 
         if len(failed) > 0:
-            sys.stderr.write("\nUnabled to parse the following variables\n\n")
+            sys.stderr.write('\nUnabled to parse the following variables\n\n')
 
             for e in failed:
                 sys.stderr.write("\t%s\n" % e)
 
-            sys.stderr.write("\nVariable/Value pairs are separated by the equals sign\n\n")
-            sys.stderr.write("Example:\n\n\tIP_ADDRESS=192.0.2.5 NETMASK=255.255.255.0 DOMAIN=example.net\n\n")
+            sys.stderr.write('\nVariable/Value pairs are separated by the equals sign\n\n')
+            sys.stderr.write('Example:\n\n\tIP_ADDRESS=192.0.2.5 NETMASK=255.255.255.0 DOMAIN=example.net\n\n')
             sys.exit(-1)
 
         if options.force:
@@ -304,7 +304,7 @@ if __name__ == '__main__':
                 cli.list_unset_vars(unsetvars)
                 sys.exit(-1)
 
-        print tpl.render_template()
+        print(tpl.render_template())
 
         sys.exit(0)
 
@@ -317,7 +317,7 @@ if __name__ == '__main__':
             tplvars = cli.interactive_mode(tpl)
             tpl.set_variables(tplvars)
 
-        print
-        print tpl.render_template()
+        print()
+        print(tpl.render_template())
 
         sys.exit(0)
