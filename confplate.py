@@ -184,7 +184,7 @@ class Cli(object):
             try:
                 s = raw_input("%s: " % v)
             except KeyboardInterrupt:
-                print 'Mhkay, you have pressed Ctrl+c. We will have to start all over again...Bye, Bye'
+                print 'Quitting interactive mode: You have pressed Ctrl + c'
                 sys.exit(1)
 
             d[v] = s
