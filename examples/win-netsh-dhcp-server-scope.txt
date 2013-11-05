@@ -1,0 +1,6 @@
+Dhcp Server \\{{DHCP_SERVER}} add scope {{SCOPE_NETWORK_ID}} {{SCOPE_NETMASK}} "{{SCOPE_NAME}}" "{{SCOPE_DESCRIPTION}}"
+Dhcp Server \\{{DHCP_SERVER}} Scope {{SCOPE_NETWORK_ID}} set state 1
+Dhcp Server \\{{DHCP_SERVER}} Scope {{SCOPE_NETWORK_ID}} set delayoffer 0
+Dhcp Server \\{{DHCP_SERVER}} Scope {{SCOPE_NETWORK_ID}} Add iprange {{SCOPE_FIRST_IP}} {{SCOPE_LAST_IP}}
+Dhcp Server \\{{DHCP_SERVER}} Scope {{SCOPE_NETWORK_ID}} set optionvalue 51 DWORD "691200"
+Dhcp Server \\{{DHCP_SERVER}} Scope {{SCOPE_NETWORK_ID}} set optionvalue 3 IPADDRESS "{{SCOPE_DEFAULT_GATEWAY}}"
