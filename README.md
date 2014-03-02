@@ -134,17 +134,14 @@ Use new-subnets.csv as input and create a config per line
 	 ip ospf passive-interface
 	 ip helper-address 192.168.100.100
 
-Generate a CSV header from an existing template
+Generate a CSV header from an existing template. This should make generating a CSV header in your favourite spreadsheet application manually unnecessary
 
-* This should make generating a CSV header in your favourite spreadsheet application manually unnecessary
 
 	$ ./confplate.py --generate-csv-header examples/cat3560.txt
 	ACCESS_VLAN,DOMAINNAME,HOSTNAME,MGMT_DEFAULT_GW,MGMT_IFACE,MGMT_IFACE_IP,MGMT_IFACE_NM
-
+	
 	$ ./confplate.py --generate-csv-header examples/cat3560.txt > /tmp/cat3560.csv
-
-* The field separator is configured. Here we are using a ; instead of the default ,
-
+	
 	$ ./confplate.py -g -F ";" examples/cat3560.txt 
 	ACCESS_VLAN;DOMAINNAME;HOSTNAME;MGMT_DEFAULT_GW;MGMT_IFACE;MGMT_IFACE_IP;MGMT_IFACE_NM
 
