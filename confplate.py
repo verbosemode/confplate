@@ -7,17 +7,17 @@
 # The MIT License (MIT)
 #
 # Copyright (c) 2013 Jochen Bartl <jochenbartl@mail.de>
-# 
+#
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
 # in the Software without restriction, including without limitation the rights
 # to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 # copies of the Software, and to permit persons to whom the Software is
 # furnished to do so, subject to the following conditions:
-# 
+#
 # The above copyright notice and this permission notice shall be included in
 # all copies or substantial portions of the Software.
-# 
+#
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 # FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -32,6 +32,7 @@ from optparse import OptionParser
 import logging
 import os.path
 import csv
+import string
 
 from jinja2 import Environment, FileSystemLoader, StrictUndefined, meta
 
@@ -69,21 +70,34 @@ class ConfPlate(object):
 
         return sorted(d)
 
-    def get_template_vars(self, ignorevars=[]):
+    def get_template_vars(self, ignorevars=[], sort=True):
+        """Return a list of all variables found in the template
+
+
+        Arguments:
+
+            ignorevars  -- a list of variables that are removed from the output
+            sort        -- True (default) or False if returned list should be sorted
+        """
         env = Environment(loader=FileSystemLoader(self.templatepath), undefined=StrictUndefined)
 
         tplsrc = env.loader.get_source(env, self.templatename)[0]
         ast = env.parse(tplsrc)
         tplvars = meta.find_undeclared_variables(ast)
 
-        # TODO Option for returing data unordered?
-        return sorted([e for e in tplvars if not e in ignorevars])
+        tplvars = [e for e in tplvars if not e in ignorevars]
+
+        if sort:
+            return sorted(tplvars)
+        else:
+            return tplvars
 
     def get_unset_template_vars(self, ignorevars=[]):
-        """
-        Return a list of variables that have no assigned value
-        """
+        """Return a list of variables that have no assigned value
 
+        Arguments:
+            ignorevars  -- a list of variables that are removed from the output
+        """
         tplvars = self.get_template_vars()
 
         return [e for e in tplvars if not e in self.variables]
@@ -177,6 +191,19 @@ class Cli(object):
 
         sys.stderr.write('\nPlease specify them or use the -f/--force option to replace unset variables with the string UNSET\n\n')
 
+    def generate_csv_header(self, tpl, separator=','):
+        """Print a CSV header to the commandline from variables found in a template
+
+        Arguments:
+            tpl       -- an instance of ConfPlate, which is already configured
+                         with a path to a template
+            separator -- a string specifying the separator between the column
+                         headers. Defaults to a comma: ","
+        """
+        tplvars = tpl.get_template_vars()
+
+        print(string.join(tplvars, separator))
+
     def interactive_mode(self, tpl):
         tplvars = tpl.get_template_vars()
         d = {}
@@ -206,6 +233,10 @@ if __name__ == '__main__':
                          help='Replace unset variables with UNSET and continue', default=False)
     optparser.add_option('-i', '--input-csv', dest='inputcsv',
                          help='Read variables from a CSV file')
+    optparser.add_option('-g', '--generate-csv-header', dest='generatecsvheader', action='store_true',
+                         help='Generate the CSV header for an input file based on a given template', default=False)
+    optparser.add_option('-F', '--csv-field-separator', dest='csvfieldseparator', default=',',
+                         help='Sets the field separator for the CSV header output')
     #optparser.add_option('-D', '--debug', dest='debug', action='store_true',
     #                        help='Enable debug mode', default=False)
 
@@ -242,6 +273,19 @@ if __name__ == '__main__':
 
         cli = Cli()
         cli.list_template_vars(tpl)
+
+        sys.exit(0)
+
+    #--------------------------------------------------------------------------
+    # Generate CSV header template
+    #--------------------------------------------------------------------------
+    if options.generatecsvheader:
+        tpl = ConfPlate()
+        tpl.templatepath = os.path.dirname(args[0])
+        tpl.templatename = os.path.basename(args[0])
+
+        cli = Cli()
+        cli.generate_csv_header(tpl, separator=options.csvfieldseparator)
 
         sys.exit(0)
 
@@ -318,7 +362,6 @@ if __name__ == '__main__':
             tplvars = cli.interactive_mode(tpl)
             tpl.set_variables(tplvars)
 
-        print()
         print(tpl.render_template())
 
         sys.exit(0)
