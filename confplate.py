@@ -70,7 +70,7 @@ class ConfPlate(object):
 
         return sorted(d)
 
-    def get_template_vars(self, ignorevars=[], sort=True):
+    def get_template_vars(self, ignorevars=[], sort=True, maxnestlevels=100):
         """Return a list of all variables found in the template
 
 
@@ -78,14 +78,42 @@ class ConfPlate(object):
 
             ignorevars  -- a list of variables that are removed from the output
             sort        -- True (default) or False if returned list should be sorted
+            maxnestlevels -- a positve integer which defines how deep you can nest templates with includes
         """
+
+        tplvars = []
+        templates = []
+        templatesseen = []
+        nestlevels = 0
+
         env = Environment(loader=FileSystemLoader(self.templatepath), undefined=StrictUndefined)
 
-        tplsrc = env.loader.get_source(env, self.templatename)[0]
-        ast = env.parse(tplsrc)
-        tplvars = meta.find_undeclared_variables(ast)
+        templates.append(self.templatename)
+        templatesseen.append(self.templatename)
 
-        tplvars = [e for e in tplvars if not e in ignorevars]
+        while len(templates) > 0:
+            tpl = templates.pop()
+            nested = False
+
+            tplsrc = env.loader.get_source(env, tpl)[0]
+            ast = env.parse(tplsrc)
+
+            for template in meta.find_referenced_templates(ast):
+                if template in templatesseen:
+                    raise Exception("Template loop detected: \"{}\" references \"{}\" which was seen earlier".format(tpl, template))
+                else:
+                    templates.append(template)
+                    templatesseen.append(template)
+                    nested = True
+
+            for e in meta.find_undeclared_variables(ast):
+                if not e in ignorevars:
+                    tplvars.append(e)
+
+            if nested and nestlevels >= maxnestlevels:
+                raise Exception("Maximum template nesting depth of {} reached in template {}".format(maxnestlevels, template))
+            else:
+                nestlevels += 1
 
         if sort:
             return sorted(tplvars)
