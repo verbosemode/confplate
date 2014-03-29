@@ -1,8 +1,6 @@
 ConfPlate is a configuration file generator. After doing some configurations over and over again I got bored and built this script. Boring tasks often lead to mistakes in configurations which you want to avoid I assume.
 
-The script is based on Python and uses Jinja2 as template language. Due to the lack of error handling and not enough
-testing some features supported by Jinja2 might not work (template inheritence, for loops, ...) yet.
-
+The script is based on Python2 and uses Jinja2 as template language.
 
 Design goals
 ============
