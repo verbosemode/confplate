@@ -36,7 +36,8 @@ import string
 
 from jinja2 import Environment, FileSystemLoader, StrictUndefined, meta
 
-VERSION = '0.1'
+
+__VERSION__ = '0.1'
 
 
 class ConfPlate(object):
@@ -251,7 +252,8 @@ class Cli(object):
 def show_usage_examples():
     print('Sorry, not yet')
 
-if __name__ == '__main__':
+
+def main():
     optparser = OptionParser(usage="usage: %prog [options] template-file [template variables ...]")
     optparser.add_option('', '--help-examples', dest='examples', action='store_true',
                          help='Show usage examples', default=False)
@@ -393,3 +395,6 @@ if __name__ == '__main__':
         print(tpl.render_template())
 
         sys.exit(0)
+
+if __name__ == '__main__':
+    main()
