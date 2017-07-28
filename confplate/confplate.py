@@ -108,7 +108,7 @@ class ConfPlate(object):
                     nested = True
 
             for e in meta.find_undeclared_variables(ast):
-                if not e in ignorevars:
+                if not e in ignorevars and not e in tplvars:
                     tplvars.append(e)
 
             if nested and nestlevels >= maxnestlevels:
