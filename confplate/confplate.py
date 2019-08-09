@@ -36,8 +36,10 @@ import string
 
 from jinja2 import Environment, FileSystemLoader, StrictUndefined, meta
 
+# python2/3 compatibility for raw_input / input
+real_raw_input = vars(__builtins__).get('raw_input',input)
 
-__VERSION__ = '0.1'
+__VERSION__ = '0.1.1'
 
 
 class ConfPlate(object):
@@ -239,7 +241,7 @@ class Cli(object):
 
         for v in tplvars:
             try:
-                s = raw_input("%s: " % v)
+                s = real_raw_input("%s: " % v)
             except KeyboardInterrupt:
                 print('Quitting interactive mode: You have pressed Ctrl + c')
                 sys.exit(1)
