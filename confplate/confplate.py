@@ -351,10 +351,10 @@ def main():
 
                 print(tpl.render_template())
 
-            if len(unsetvars) > 0:
-                print("CSV row %i" % i)
-                cli.list_unset_vars(unsetvars)
-                sys.exit(-1)
+                if len(unsetvars) > 0:
+                    print("CSV row %i" % i)
+                    cli.list_unset_vars(unsetvars)
+                    sys.exit(-1)
 
         sys.exit(0)
 
