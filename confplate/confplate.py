@@ -36,7 +36,7 @@ import string
 
 from jinja2 import Environment, FileSystemLoader, StrictUndefined, meta
 
-__VERSION__ = '0.1.2'
+__VERSION__ = '0.1.3'
 
 
 class ConfPlate(object):
@@ -154,14 +154,24 @@ class ConfPlate(object):
 
         return l
 
-    def get_vardicts_from_csv(self, filename):
+    def get_vardicts_from_csv(self, filename, filterfield, filtervalue):
+        """
+        Load variables from CSV. Filter if ff and fv are set.
+        """
         l = []
+
 
         with open(filename, 'r') as f:
             reader = csv.DictReader(f)
 
-            for row in reader:
-                l.append(row)
+            if filterfield and filtervalue:
+                for row in reader:
+                    if row[filterfield] == filtervalue:
+                        l.append(row)
+
+            else:
+                for row in reader:
+                    l.append(row)
 
         return l
 
@@ -266,6 +276,8 @@ def main():
                          help='Generate the CSV header for an input file based on a given template', default=False)
     optparser.add_option('-F', '--csv-field-separator', dest='csvfieldseparator', default=',',
                          help='Sets the field separator for the CSV header output')
+    optparser.add_option('--ff','--filter-field', dest='filterfield',help='Filter CSV on value of field')
+    optparser.add_option('--fv','--filter-value', dest='filtervalue',help='Value to match in FILTERFIELD')
     #optparser.add_option('-D', '--debug', dest='debug', action='store_true',
     #                        help='Enable debug mode', default=False)
 
@@ -327,6 +339,17 @@ def main():
 
     cli = Cli()
 
+    # Get filters
+    filterfield = options.filterfield
+    filtervalue = options.filtervalue
+    if options.filterfield and not options.filtervalue:
+        sys.stderr.write("You must specify a value to filter on with --fv if you have specified filter field with --ff\n")
+        sys.exit(-1)
+
+    if  options.filtervalue and not options.filterfield:
+        sys.stderr.write("You must specify a field to filter on with --ff if you have specified filter value with --fv\n")
+        sys.exit(-1)
+
     # Read variables from CSV file
     if options.inputcsv:
         i = 1
@@ -337,7 +360,7 @@ def main():
             sys.stderr.write("CSV input file \"%s\" does not exist!\n" % csvfilename)
             sys.exit(-1)
 
-        tplvarlist = tpl.get_vardicts_from_csv(csvfilename)
+        tplvarlist = tpl.get_vardicts_from_csv(csvfilename,filterfield,filtervalue)
 
         for e in tplvarlist:
             if options.force:
