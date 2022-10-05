@@ -278,6 +278,7 @@ def main():
                          help='Sets the field separator for the CSV header output')
     optparser.add_option('--ff','--filter-field', dest='filterfield',help='Filter CSV on value of field')
     optparser.add_option('--fv','--filter-value', dest='filtervalue',help='Value to match in FILTERFIELD')
+    optparser.add_option('--nolf', dest='nolf',action='store_true',help='Omits LF between outputting CSV rows')
     #optparser.add_option('-D', '--debug', dest='debug', action='store_true',
     #                        help='Enable debug mode', default=False)
 
@@ -342,6 +343,7 @@ def main():
     # Get filters
     filterfield = options.filterfield
     filtervalue = options.filtervalue
+   
     if options.filterfield and not options.filtervalue:
         sys.stderr.write("You must specify a value to filter on with --fv if you have specified filter field with --ff\n")
         sys.exit(-1)
@@ -365,11 +367,19 @@ def main():
         for e in tplvarlist:
             if options.force:
                 tpl.set_variables(e, unset='UNSET')
-                print(tpl.render_template())
+                if options.nolf:
+                    # render without LF between CSV row outputs
+                    print(tpl.render_template(),end='')
+                else:
+                    print(tpl.render_template())
+
             else:
                 unsetvars = tpl.set_variables(e)
-
-                print(tpl.render_template())
+                if options.nolf:
+                    # render without LF between CSV row outputs
+                    print(tpl.render_template(),end='')
+                else:
+                    print(tpl.render_template())
 
                 if len(unsetvars) > 0:
                     print("CSV row %i" % i)
