@@ -154,7 +154,7 @@ class ConfPlate(object):
 
         return l
 
-    def get_vardicts_from_csv(self, filename, filterfield, filtervalue):
+    def get_vardicts_from_csv(self, filename, filterfield, filtervalue, filterfield2, filtervalue2):
         """
         Load variables from CSV. Filter if ff and fv are set.
         """
@@ -164,11 +164,16 @@ class ConfPlate(object):
         with open(filename, 'r') as f:
             reader = csv.DictReader(f)
 
-            if filterfield and filtervalue:
+            if (filterfield and filtervalue) and (filterfield2 and filtervalue2):
                 for row in reader:
-                    if row[filterfield] == filtervalue:
+                    if (row[filterfield] == filtervalue) and (row[filterfield2] == filtervalue2):
                         l.append(row)
 
+            elif (filterfield and filtervalue):
+                for row in reader:
+                    if (row[filterfield] == filtervalue):
+                        l.append(row)
+                        
             else:
                 for row in reader:
                     l.append(row)
@@ -278,6 +283,8 @@ def main():
                          help='Sets the field separator for the CSV header output')
     optparser.add_option('--ff','--filter-field', dest='filterfield',help='Filter CSV on value of field')
     optparser.add_option('--fv','--filter-value', dest='filtervalue',help='Value to match in FILTERFIELD')
+    optparser.add_option('--ff2','--filter-field2', dest='filterfield2',help='Filter CSV on value of field 2')
+    optparser.add_option('--fv2','--filter-value2', dest='filtervalue2',help='Value to match in FILTERFIELD2')
     optparser.add_option('--nolf', dest='nolf',action='store_true',help='Omits LF between outputting CSV rows')
     #optparser.add_option('-D', '--debug', dest='debug', action='store_true',
     #                        help='Enable debug mode', default=False)
@@ -343,6 +350,8 @@ def main():
     # Get filters
     filterfield = options.filterfield
     filtervalue = options.filtervalue
+    filterfield2 = options.filterfield2
+    filtervalue2 = options.filtervalue2
    
     if options.filterfield and not options.filtervalue:
         sys.stderr.write("You must specify a value to filter on with --fv if you have specified filter field with --ff\n")
@@ -350,6 +359,14 @@ def main():
 
     if  options.filtervalue and not options.filterfield:
         sys.stderr.write("You must specify a field to filter on with --ff if you have specified filter value with --fv\n")
+        sys.exit(-1)
+
+    if options.filterfield2 and not options.filtervalue2:
+        sys.stderr.write("You must specify a value to filter on with --fv2 if you have specified filter field with --ff2\n")
+        sys.exit(-1)
+
+    if  options.filtervalue2 and not options.filterfield2:
+        sys.stderr.write("You must specify a field to filter on with --ff2 if you have specified filter value with --fv2\n")
         sys.exit(-1)
 
     # Read variables from CSV file
@@ -362,7 +379,7 @@ def main():
             sys.stderr.write("CSV input file \"%s\" does not exist!\n" % csvfilename)
             sys.exit(-1)
 
-        tplvarlist = tpl.get_vardicts_from_csv(csvfilename,filterfield,filtervalue)
+        tplvarlist = tpl.get_vardicts_from_csv(csvfilename,filterfield,filtervalue,filterfield2,filtervalue2)
 
         for e in tplvarlist:
             if options.force:
