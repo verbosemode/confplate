@@ -245,7 +245,7 @@ class Cli(object):
         """
         tplvars = tpl.get_template_vars()
 
-        print(string.join(tplvars, separator))
+        print(separator.join(tplvars))
 
     def interactive_mode(self, tpl):
         tplvars = tpl.get_template_vars()
