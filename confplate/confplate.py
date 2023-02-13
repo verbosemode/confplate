@@ -33,6 +33,7 @@ import logging
 import os.path
 import csv
 import string
+import re
 
 from jinja2 import Environment, FileSystemLoader, StrictUndefined, meta
 
@@ -166,12 +167,12 @@ class ConfPlate(object):
 
             if (filterfield and filtervalue) and (filterfield2 and filtervalue2):
                 for row in reader:
-                    if (row[filterfield] == filtervalue) and (row[filterfield2] == filtervalue2):
+                    if (re.search(filtervalue,row[filterfield]) and re.search(filtervalue2,row[filterfield2])):
                         l.append(row)
 
             elif (filterfield and filtervalue):
                 for row in reader:
-                    if (row[filterfield] == filtervalue):
+                    if (re.search(filtervalue,row[filterfield])):
                         l.append(row)
                         
             else:
@@ -282,9 +283,9 @@ def main():
     optparser.add_option('-F', '--csv-field-separator', dest='csvfieldseparator', default=',',
                          help='Sets the field separator for the CSV header output')
     optparser.add_option('--ff','--filter-field', dest='filterfield',help='Filter CSV on value of field')
-    optparser.add_option('--fv','--filter-value', dest='filtervalue',help='Value to match in FILTERFIELD')
+    optparser.add_option('--fv','--filter-value', dest='filtervalue',help='Value to match in FILTERFIELD (RegEx allowed)')
     optparser.add_option('--ff2','--filter-field2', dest='filterfield2',help='Filter CSV on value of field 2')
-    optparser.add_option('--fv2','--filter-value2', dest='filtervalue2',help='Value to match in FILTERFIELD2')
+    optparser.add_option('--fv2','--filter-value2', dest='filtervalue2',help='Value to match in FILTERFIELD2 (RegEx allowed)')
     optparser.add_option('--nolf', dest='nolf',action='store_true',help='Omits LF between outputting CSV rows')
     #optparser.add_option('-D', '--debug', dest='debug', action='store_true',
     #                        help='Enable debug mode', default=False)
