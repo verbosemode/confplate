@@ -37,7 +37,7 @@ import re
 
 from jinja2 import Environment, FileSystemLoader, StrictUndefined, meta
 
-__VERSION__ = '0.1.3'
+__VERSION__ = '0.1.4'
 
 
 class ConfPlate(object):
