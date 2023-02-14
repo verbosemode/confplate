@@ -10,6 +10,7 @@ Notes
 	* now works with python3 (and requires it)
 	* --force mode works with csv input
 	* added ability to filter csv data by two fields
+	* ability to use regex in filters
 	* with much less elegant code (use at your own peril)!
 
 Design goals
