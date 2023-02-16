@@ -1,6 +1,17 @@
 ConfPlate is a configuration file generator. After doing some configurations over and over again I got bored and built this script. Boring tasks often lead to mistakes in configurations which you want to avoid I assume.
 
-The script is based on Python2 and uses Jinja2 as template language.
+The script is requires Python3 and uses Jinja2 as template language.
+
+Notes
+=====
+
+* Original author has archived their copy and moved onto bigger and better things.
+* This fork has been updated as follows
+	* now works with python3 (and requires it)
+	* --force mode works with csv input
+	* added ability to filter csv data by two fields
+	* ability to use regex in filters
+	* with much less elegant code (use at your own peril)!
 
 Design goals
 ============
@@ -11,7 +22,7 @@ Design goals
 * Make it easy to create UIs on top of the main code base
 
 
-Usage Examplse
+Usage Examples
 ==============
 
 Example template cat3560.txt:
@@ -142,6 +153,21 @@ Generate a CSV header from an existing template. This should make generating a C
 	
 	$ ./confplate.py -g -F ";" examples/cat3560.txt 
 	ACCESS_VLAN;DOMAINNAME;HOSTNAME;MGMT_DEFAULT_GW;MGMT_IFACE;MGMT_IFACE_IP;MGMT_IFACE_NM
+
+CSV Filters
+-----------
+
+Filter CSV data based on a value in one of the fields. Field must match specified value. Example filters csv to only render output for Floor2.
+
+	$ ./confplate.py -i examples/new-subnets.csv --ff VLAN_NAME --fv Floor2 examples/new-subnets.txt 
+	vlan 50
+	 name Floor2
+	!
+	interface Vlan50
+	 ip address 192.168.50.2 255.255.255.0
+	 ip ospf 1 area 0.0.0.0
+	 ip ospf passive-interface
+	 ip helper-address 192.168.100.100
 
 
 

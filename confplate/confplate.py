@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # Config file generator based on Jinja2 templates
 #
@@ -33,11 +33,11 @@ import logging
 import os.path
 import csv
 import string
+import re
 
 from jinja2 import Environment, FileSystemLoader, StrictUndefined, meta
 
-
-__VERSION__ = '0.1'
+__VERSION__ = '0.1.4'
 
 
 class ConfPlate(object):
@@ -155,14 +155,29 @@ class ConfPlate(object):
 
         return l
 
-    def get_vardicts_from_csv(self, filename):
+    def get_vardicts_from_csv(self, filename, filterfield, filtervalue, filterfield2, filtervalue2):
+        """
+        Load variables from CSV. Filter if ff and fv are set.
+        """
         l = []
+
 
         with open(filename, 'r') as f:
             reader = csv.DictReader(f)
 
-            for row in reader:
-                l.append(row)
+            if (filterfield and filtervalue) and (filterfield2 and filtervalue2):
+                for row in reader:
+                    if (re.search(filtervalue,row[filterfield]) and re.search(filtervalue2,row[filterfield2])):
+                        l.append(row)
+
+            elif (filterfield and filtervalue):
+                for row in reader:
+                    if (re.search(filtervalue,row[filterfield])):
+                        l.append(row)
+                        
+            else:
+                for row in reader:
+                    l.append(row)
 
         return l
 
@@ -231,7 +246,7 @@ class Cli(object):
         """
         tplvars = tpl.get_template_vars()
 
-        print(string.join(tplvars, separator))
+        print(separator.join(tplvars))
 
     def interactive_mode(self, tpl):
         tplvars = tpl.get_template_vars()
@@ -239,7 +254,7 @@ class Cli(object):
 
         for v in tplvars:
             try:
-                s = raw_input("%s: " % v)
+                s = input("%s: " % v)
             except KeyboardInterrupt:
                 print('Quitting interactive mode: You have pressed Ctrl + c')
                 sys.exit(1)
@@ -267,6 +282,11 @@ def main():
                          help='Generate the CSV header for an input file based on a given template', default=False)
     optparser.add_option('-F', '--csv-field-separator', dest='csvfieldseparator', default=',',
                          help='Sets the field separator for the CSV header output')
+    optparser.add_option('--ff','--filter-field', dest='filterfield',help='Filter CSV on value of field')
+    optparser.add_option('--fv','--filter-value', dest='filtervalue',help='Value to match in FILTERFIELD (RegEx allowed)')
+    optparser.add_option('--ff2','--filter-field2', dest='filterfield2',help='Filter CSV on value of field 2')
+    optparser.add_option('--fv2','--filter-value2', dest='filtervalue2',help='Value to match in FILTERFIELD2 (RegEx allowed)')
+    optparser.add_option('--nolf', dest='nolf',action='store_true',help='Omits LF between outputting CSV rows')
     #optparser.add_option('-D', '--debug', dest='debug', action='store_true',
     #                        help='Enable debug mode', default=False)
 
@@ -328,6 +348,28 @@ def main():
 
     cli = Cli()
 
+    # Get filters
+    filterfield = options.filterfield
+    filtervalue = options.filtervalue
+    filterfield2 = options.filterfield2
+    filtervalue2 = options.filtervalue2
+   
+    if options.filterfield and not options.filtervalue:
+        sys.stderr.write("You must specify a value to filter on with --fv if you have specified filter field with --ff\n")
+        sys.exit(-1)
+
+    if  options.filtervalue and not options.filterfield:
+        sys.stderr.write("You must specify a field to filter on with --ff if you have specified filter value with --fv\n")
+        sys.exit(-1)
+
+    if options.filterfield2 and not options.filtervalue2:
+        sys.stderr.write("You must specify a value to filter on with --fv2 if you have specified filter field with --ff2\n")
+        sys.exit(-1)
+
+    if  options.filtervalue2 and not options.filterfield2:
+        sys.stderr.write("You must specify a field to filter on with --ff2 if you have specified filter value with --fv2\n")
+        sys.exit(-1)
+
     # Read variables from CSV file
     if options.inputcsv:
         i = 1
@@ -338,21 +380,29 @@ def main():
             sys.stderr.write("CSV input file \"%s\" does not exist!\n" % csvfilename)
             sys.exit(-1)
 
-        tplvarlist = tpl.get_vardicts_from_csv(csvfilename)
+        tplvarlist = tpl.get_vardicts_from_csv(csvfilename,filterfield,filtervalue,filterfield2,filtervalue2)
 
         for e in tplvarlist:
             if options.force:
                 tpl.set_variables(e, unset='UNSET')
-                print(tpl.render_template())
+                if options.nolf:
+                    # render without LF between CSV row outputs
+                    print(tpl.render_template(),end='')
+                else:
+                    print(tpl.render_template())
+
             else:
                 unsetvars = tpl.set_variables(e)
+                if options.nolf:
+                    # render without LF between CSV row outputs
+                    print(tpl.render_template(),end='')
+                else:
+                    print(tpl.render_template())
 
-                print(tpl.render_template())
-
-            if len(unsetvars) > 0:
-                print("CSV row %i" % i)
-                cli.list_unset_vars(unsetvars)
-                sys.exit(-1)
+                if len(unsetvars) > 0:
+                    print("CSV row %i" % i)
+                    cli.list_unset_vars(unsetvars)
+                    sys.exit(-1)
 
         sys.exit(0)
 
